@@ -1,0 +1,18 @@
+{
+  "name": "ForageID",
+  "short_name": "ForageID",
+  "description": "AI-powered plant, mushroom & seaweed identification",
+  "start_url": "/forageid/",
+  "display": "standalone",
+  "background_color": "#F0FAF2",
+  "theme_color": "#2D6A4F",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
