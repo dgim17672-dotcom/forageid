@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>ForageID – AI Foraging Guide</title>
+<title>ForageID – AI Foraging Guide v6</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0D2B1A">
 <meta name="mobile-web-app-capable" content="yes">
@@ -29,7 +29,7 @@ body::before{
   background:radial-gradient(ellipse 80% 40% at 50% -10%,rgba(82,183,136,.12) 0%,transparent 60%),
              radial-gradient(ellipse 60% 30% at 100% 80%,rgba(45,106,79,.08) 0%,transparent 50%);
 }
-.hdr{position:relative;z-index:10;background:var(--ink);padding:14px 18px 10px;
+.hdr{position:relative;z-index:1000;background:var(--ink);padding:14px 18px 10px;
   display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .hdr-brand{display:flex;align-items:center;gap:10px}
 .hdr-logo{width:34px;height:34px;background:linear-gradient(135deg,var(--moss),var(--fern));
@@ -211,10 +211,20 @@ body::before{
     <div class="hdr-logo">🔍</div>
     <span class="hdr-name">ForageID</span>
   </div>
-  <div class="hdr-right">
-    <button class="lang-pill" onclick="cycleLang()" id="langBtn">🌐 EN</button>
-    <button class="pro-badge" onclick="goTab('pro')">PRO ⭐</button>
-  </div>
+    <div class="hdr-right">
+      <div style="position:relative;">
+        <button class="lang-pill" onclick="toggleLangMenu()" id="langBtn">🌐 EN</button>
+        <div id="langMenu" style="display:none;position:absolute;right:0;top:36px;background:white;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;overflow:hidden;min-width:100px;">
+          <div onclick="selectLang('EN')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D2B1A;font-weight:500;">🇺🇸 EN</div>
+          <div onclick="selectLang('KO')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D2B1A;font-weight:500;">🇰🇷 KO</div>
+          <div onclick="selectLang('JA')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D2B1A;font-weight:500;">🇯🇵 JA</div>
+          <div onclick="selectLang('ES')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D2B1A;font-weight:500;">🇪🇸 ES</div>
+          <div onclick="selectLang('TH')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D2B1A;font-weight:500;">🇹🇭 TH</div>
+          <div onclick="selectLang('ZH')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D2B1A;font-weight:500;">🇨🇳 ZH</div>
+        </div>
+      </div>
+      <button class="pro-badge" onclick="goTab('pro')">PRO ⭐</button>
+    </div>
 </div>
 
 <div class="nav">
@@ -266,6 +276,9 @@ body::before{
       </div>
       <div class="res-text" id="resTxt">—</div>
       <div class="disclaimer" id="disclaim">⚠️ Educational only. Consult a local expert before consuming any wild plant.</div>
+      <div id="aiWarnBox" style="display:none;margin-top:10px;background:#FFF0F0;border-left:3px solid #C0392B;border-radius:0 10px 10px 0;padding:10px 13px;font-size:11.5px;color:#7B0000;line-height:1.55;">
+        🤖 AI results may be incorrect. Do not rely solely on AI for edibility decisions. Always verify with a local expert before consuming.
+      </div>
     </div>
   </div>
   <div class="limit-banner" onclick="goTab('pro')">
@@ -334,9 +347,14 @@ body::before{
       Annual $30 🏷️
     </button>
   </div>
-  <button class="sub-btn" id="subBtn" onclick="subscribe()">⭐ Subscribe — $3/month</button>
-  <button class="restore-btn" id="restBtn" onclick="restore()">Restore Purchase</button>
-  <div class="legal" id="legalTxt">Cancel anytime. Billed monthly via Google Play.</div>
+  <button class="sub-btn" id="subBtn" onclick="subscribe()" style="display:none">⭐ Subscribe — $3/month</button>
+  <button class="restore-btn" id="restBtn" onclick="restore()" style="display:none">Restore Purchase</button>
+  <div class="legal" id="legalTxt" style="display:none">Cancel anytime. Billed monthly via Google Play.</div>
+  <div style="background:#F0F4F0;border-radius:14px;padding:16px;text-align:center;margin-top:4px;">
+    <div style="font-size:22px;margin-bottom:8px;">🚧</div>
+    <div style="font-size:14px;font-weight:600;color:#1A4731;margin-bottom:4px;">Pro subscription coming soon</div>
+    <div style="font-size:12px;color:#6B8C7A;">Available in the next update via Google Play</div>
+  </div>
   <div class="safe-bottom"></div>
 </div>
 
@@ -573,6 +591,21 @@ function applyLang(l) {
 }
 
 function cycleLang() { li = (li + 1) % LANGS.length; applyLang(LANGS[li]); }
+function toggleLangMenu() {
+  const m = document.getElementById('langMenu');
+  m.style.display = m.style.display === 'none' ? 'block' : 'none';
+}
+function selectLang(l) {
+  li = LANGS.indexOf(l);
+  applyLang(l);
+  document.getElementById('langMenu').style.display = 'none';
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#langBtn') && !e.target.closest('#langMenu')) {
+    const m = document.getElementById('langMenu');
+    if (m) m.style.display = 'none';
+  }
+});
 
 // ─────────────────────────────────────────────────────────
 // CATEGORY
@@ -641,7 +674,10 @@ Respond ONLY in ${lMap[CL]}. Return ONLY valid JSON with no markdown, no code fe
     });
 
     const json = await resp.json();
-    // Gemini 응답 파싱
+    // Gemini 응답 파싱 (null 체크 추가)
+    if (!json.candidates || !json.candidates[0] || !json.candidates[0].content) {
+      throw new Error('Empty response from AI');
+    }
     const raw = json.candidates[0].content.parts[0].text
       .replace(/```json|```/g, '').trim();
     showResult(JSON.parse(raw));
@@ -677,6 +713,9 @@ function showResult(r) {
       .classList.toggle('active', (r.seasons || []).some(x => x.toLowerCase().includes(s)));
   });
   st('resTxt', (r.description || '') + (r.warning ? ' ⚠️ ' + r.warning : ''));
+  // AI 오인식 경고 추가
+  const aiWarn = document.getElementById('aiWarnBox');
+  if (aiWarn) aiWarn.style.display = 'block';
   document.getElementById('res').classList.add('show');
   document.getElementById('res').scrollIntoView({ behavior:'smooth', block:'nearest' });
 }
@@ -723,8 +762,9 @@ renderSpecies('spring');
 // ─────────────────────────────────────────────────────────
 // PRO
 // ─────────────────────────────────────────────────────────
-function subscribe() { alert('Coming soon via Google Play!'); }
-function restore()   { alert('No active subscription found.'); }
+// v6: 구독/복원 버튼 숨김 (Google Play Billing 연결 전)
+function subscribe() { /* Coming soon */ }
+function restore()   { /* Coming soon */ }
 </script>
 </body>
 </html>
