@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>ForageID – AI Foraging Guide v6</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0D2B1A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ForageID">
+<link rel="icon" href="icon-512.png">
+<link rel="apple-touch-icon" href="icon-512.png">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --ink:#0D2B1A;--forest:#1A4731;--moss:#2D6A4F;--fern:#52B788;
+  --dew:#95D5B2;--mist:#D8F3DC;--paper:#F7FBF8;--cream:#FEFCF8;
+  --safe:#2D9B5A;--caution:#D4840A;--danger:#C0392B;--unknown:#6B7280;
+}
+html,body{height:100%}
+body{
+  font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);
+  display:flex;flex-direction:column;max-width:430px;margin:0 auto;overflow:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 80% 40% at 50% -10%,rgba(82,183,136,.12) 0%,transparent 60%),
+             radial-gradient(ellipse 60% 30% at 100% 80%,rgba(45,106,79,.08) 0%,transparent 50%);
+}
+.hdr{position:relative;z-index:1000;background:var(--ink);padding:14px 18px 10px;
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.hdr-brand{display:flex;align-items:center;gap:10px}
+.hdr-logo{width:34px;height:34px;background:linear-gradient(135deg,var(--moss),var(--fern));
+  border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;
+  box-shadow:0 2px 8px rgba(82,183,136,.4)}
+.hdr-name{font-family:'Cormorant Garamond',serif;font-size:22px;color:#fff;letter-spacing:.5px}
+.hdr-right{display:flex;align-items:center;gap:8px}
+.lang-pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  color:rgba(255,255,255,.9);padding:5px 12px;border-radius:20px;
+  font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;cursor:pointer;}
+.pro-badge{background:linear-gradient(135deg,#B8860B,#DAA520);color:#fff;
+  padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:none;letter-spacing:.5px}
+.nav{position:relative;z-index:10;background:var(--forest);display:flex;flex-shrink:0}
+.nav-item{flex:1;padding:10px 4px 8px;text-align:center;cursor:pointer;
+  color:rgba(255,255,255,.5);font-size:11px;font-weight:500;
+  border-bottom:2px solid transparent;transition:all .2s;letter-spacing:.3px}
+.nav-item .ni{display:block;font-size:19px;margin-bottom:3px}
+.nav-item.on{color:#fff;border-bottom-color:var(--fern)}
+.pg{display:none;flex:1;overflow-y:auto;position:relative;z-index:1}
+.pg.on{display:flex;flex-direction:column}
+.pg::-webkit-scrollbar{width:0}
+.scan-pg{padding:16px;gap:12px}
+.upload-zone{position:relative;background:var(--cream);border:2px dashed var(--dew);
+  border-radius:22px;overflow:hidden;cursor:pointer;transition:all .25s;
+  min-height:190px;display:flex;align-items:center;justify-content:center}
+.upload-zone:active{transform:scale(.98)}
+.uz-inner{text-align:center;padding:28px 20px}
+.uz-ring{width:76px;height:76px;margin:0 auto 12px;border-radius:50%;
+  background:linear-gradient(135deg,var(--mist),var(--dew));
+  display:flex;align-items:center;justify-content:center;font-size:34px;
+  box-shadow:0 4px 20px rgba(82,183,136,.25);
+  animation:pulse 2.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 4px 20px rgba(82,183,136,.25)}50%{box-shadow:0 4px 28px rgba(82,183,136,.5)}}
+.uz-title{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.uz-sub{font-size:12px;color:#6B8C7A}
+.preview{width:100%;border-radius:18px;max-height:230px;object-fit:cover;
+  display:none;box-shadow:0 8px 32px rgba(13,43,26,.2)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;display:flex;align-items:center;gap:6px;padding:8px 15px;
+  border-radius:50px;background:white;border:1.5px solid var(--mist);
+  font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;color:#4A7060;
+  cursor:pointer;transition:all .2s;white-space:nowrap}
+.chip.on{background:var(--moss);border-color:var(--moss);color:white}
+.scan-btn{position:relative;overflow:hidden;
+  background:linear-gradient(135deg,var(--moss),var(--fern));
+  color:white;border:none;border-radius:16px;padding:15px;
+  font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
+  box-shadow:0 4px 16px rgba(45,106,79,.4);letter-spacing:.3px;transition:all .2s}
+.scan-btn:active{transform:scale(.98)}
+.scan-btn:disabled{background:#ccc;box-shadow:none;cursor:not-allowed}
+.result{background:white;border-radius:20px;overflow:hidden;
+  box-shadow:0 4px 24px rgba(13,43,26,.1);display:none}
+.result.show{display:block;animation:rise .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes rise{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
+.res-top{padding:18px 18px 14px;display:flex;align-items:flex-start;gap:14px}
+.res-icon{width:54px;height:54px;border-radius:16px;display:flex;align-items:center;
+  justify-content:center;font-size:28px;flex-shrink:0}
+.ri-safe{background:#E8F8EE}.ri-caution{background:#FEF3E2}
+.ri-danger{background:#FDECEA}.ri-unknown{background:#F3F4F6}
+.res-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--ink);line-height:1.2}
+.res-sci{font-size:11px;color:#8BA898;font-style:italic;margin-top:2px}
+.safety-bar-wrap{padding:0 18px 14px}
+.safety-label{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px}
+.sl-safe{color:var(--safe)}.sl-caution{color:var(--caution)}
+.sl-danger{color:var(--danger)}.sl-unknown{color:var(--unknown)}
+.safety-track{height:8px;background:#F0F0F0;border-radius:4px;overflow:hidden}
+.safety-fill{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.34,1.56,.64,1)}
+.sf-safe{background:linear-gradient(90deg,#2D9B5A,#52B788);width:85%}
+.sf-caution{background:linear-gradient(90deg,#D4840A,#F4A261);width:55%}
+.sf-danger{background:linear-gradient(90deg,#C0392B,#E74C3C);width:20%}
+.sf-unknown{background:#D1D5DB;width:40%}
+.res-body{padding:0 18px 18px}
+.season-row{display:flex;gap:6px;margin-bottom:14px}
+.season-chip{flex:1;text-align:center;padding:7px 4px;border-radius:10px;
+  font-size:10px;font-weight:600;letter-spacing:.4px;background:#F5F5F5;color:#999}
+.season-chip.active{background:var(--mist);color:var(--moss)}
+.res-text{font-size:13.5px;color:#3D5C4A;line-height:1.65;margin-bottom:14px}
+.disclaimer{background:#FFFBF0;border-left:3px solid var(--caution);
+  border-radius:0 10px 10px 0;padding:10px 13px;font-size:11.5px;color:#7B5A00;line-height:1.55}
+.limit-banner{background:linear-gradient(135deg,#0D2B1A,#1A4731);border-radius:16px;
+  padding:15px 18px;display:flex;align-items:center;gap:14px;cursor:pointer}
+.lb-left{flex:1}
+.lb-title{font-size:14px;font-weight:600;color:white;margin-bottom:3px}
+.lb-sub{font-size:11.5px;color:rgba(255,255,255,.6)}
+.lb-btn{background:linear-gradient(135deg,#B8860B,#DAA520);color:white;border:none;
+  border-radius:10px;padding:9px 16px;font-family:'Outfit',sans-serif;
+  font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.disc-pg{padding:16px;gap:14px}
+.disc-header{background:linear-gradient(135deg,var(--ink),var(--forest));
+  border-radius:18px;padding:20px;color:white}
+.disc-header h2{font-family:'Cormorant Garamond',serif;font-size:24px;margin-bottom:6px}
+.disc-header p{font-size:13px;opacity:.75;line-height:1.5}
+.season-nav{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.season-nav::-webkit-scrollbar{display:none}
+.sn-item{flex-shrink:0;padding:8px 16px;border-radius:50px;background:white;
+  border:1.5px solid var(--mist);font-size:12px;font-weight:500;color:#4A7060;
+  cursor:pointer;transition:all .2s;white-space:nowrap}
+.sn-item.on{background:var(--moss);border-color:var(--moss);color:white}
+.species-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sp-card{background:white;border-radius:16px;padding:14px;
+  box-shadow:0 2px 12px rgba(13,43,26,.07);cursor:pointer;transition:transform .15s}
+.sp-card:active{transform:scale(.97)}
+.sp-emoji{font-size:32px;margin-bottom:8px}
+.sp-name{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:3px}
+.sp-sci{font-size:10px;color:#8BA898;font-style:italic;margin-bottom:8px}
+.sp-safety{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600}
+.ss-safe{background:#E8F8EE;color:var(--safe)}
+.ss-caution{background:#FEF3E2;color:var(--caution)}
+.ss-danger{background:#FDECEA;color:var(--danger)}
+.safety-guide{background:white;border-radius:18px;padding:16px;
+  box-shadow:0 2px 12px rgba(13,43,26,.07)}
+.sg-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:12px;
+  display:flex;align-items:center;gap:8px}
+.sg-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;
+  border-bottom:1px solid var(--mist)}
+.sg-row:last-child{border-bottom:none}
+.sg-icon{font-size:22px;flex-shrink:0;margin-top:1px}
+.sg-text h4{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.sg-text p{font-size:11.5px;color:#6B8C7A;line-height:1.5}
+.pro-pg{padding:16px;gap:14px}
+.pro-hero{background:linear-gradient(150deg,var(--ink) 0%,#0E3B25 50%,#194D33 100%);
+  border-radius:22px;padding:28px 22px;text-align:center;color:white;
+  position:relative;overflow:hidden}
+.pro-hero::before{content:'🌿';font-size:120px;position:absolute;right:-20px;top:-20px;
+  opacity:.06;line-height:1}
+.ph-crown{font-size:42px;margin-bottom:10px}
+.ph-title{font-family:'Cormorant Garamond',serif;font-size:30px;margin-bottom:8px;letter-spacing:.5px}
+.ph-sub{font-size:13px;opacity:.75;line-height:1.5;margin-bottom:18px}
+.ph-price{display:inline-block;background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);border-radius:50px;padding:8px 24px;
+  font-size:20px;font-weight:600}
+.ph-price span{font-size:13px;opacity:.7;font-weight:400}
+.feat-list{background:white;border-radius:18px;overflow:hidden;
+  box-shadow:0 2px 12px rgba(13,43,26,.07)}
+.feat{display:flex;align-items:center;gap:14px;padding:15px 16px;
+  border-bottom:1px solid var(--mist)}
+.feat:last-child{border-bottom:none}
+.feat-ico{width:42px;height:42px;border-radius:12px;background:var(--mist);
+  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.feat-txt h4{font-size:13.5px;font-weight:600;color:var(--ink)}
+.feat-txt p{font-size:11.5px;color:#6B8C7A;margin-top:2px}
+.feat-check{margin-left:auto;color:var(--fern);font-size:18px;flex-shrink:0}
+.compare{background:white;border-radius:18px;overflow:hidden;
+  box-shadow:0 2px 12px rgba(13,43,26,.07)}
+.cmp-hdr{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--mist);padding:10px 16px}
+.cmp-hdr div{font-size:11px;font-weight:700;color:var(--moss);text-align:center}
+.cmp-hdr div:first-child{text-align:left}
+.cmp-row{display:grid;grid-template-columns:1fr 1fr 1fr;padding:11px 16px;
+  border-bottom:1px solid var(--mist);align-items:center}
+.cmp-row:last-child{border-bottom:none}
+.cmp-row div{text-align:center;font-size:14px}
+.cmp-row div:first-child{text-align:left;font-size:12px;color:#4A7060;font-weight:500}
+.sub-btn{background:linear-gradient(135deg,var(--moss),var(--fern));color:white;
+  border:none;border-radius:16px;padding:18px;font-family:'Outfit',sans-serif;
+  font-size:16px;font-weight:600;cursor:pointer;width:100%;
+  box-shadow:0 6px 20px rgba(45,106,79,.4);letter-spacing:.3px;transition:all .2s}
+.sub-btn:active{transform:scale(.98)}
+.restore-btn{background:none;border:1.5px solid var(--mist);border-radius:12px;
+  padding:12px;font-family:'Outfit',sans-serif;font-size:13px;color:#6B8C7A;cursor:pointer;width:100%}
+.legal{text-align:center;font-size:10.5px;color:#9AAFA4;line-height:1.6;padding:0 10px}
+.overlay{display:none;position:fixed;inset:0;background:rgba(13,43,26,.85);z-index:999;
+  align-items:center;justify-content:center;flex-direction:column;gap:18px;backdrop-filter:blur(4px)}
+.overlay.show{display:flex;animation:fadein .3s}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.spin{width:56px;height:56px;border:4px solid rgba(255,255,255,.15);
+  border-top-color:var(--fern);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ov-text{color:white;font-size:15px;font-weight:500}
+.ov-sub{color:rgba(255,255,255,.6);font-size:12px}
+.safe-bottom{height:24px;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-brand">
+    <div class="hdr-logo">🔍</div>
+    <span class="hdr-name">ForageID</span>
+  </div>
+    <div class="hdr-right">
+      <div style="position:relative;">
+        <button class="lang-pill" onclick="toggleLangMenu()" id="langBtn">🌐 EN</button>
+        <div id="langMenu" style="display:none;position:absolute;right:0;top:36px;background:white;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;overflow:hidden;min-width:100px;">
+          <div onclick="selectLang('EN')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D2B1A;font-weight:500;">🇺🇸 EN</div>
+          <div onclick="selectLang('KO')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D2B1A;font-weight:500;">🇰🇷 KO</div>
+          <div onclick="selectLang('JA')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D2B1A;font-weight:500;">🇯🇵 JA</div>
+          <div onclick="selectLang('ES')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D2B1A;font-weight:500;">🇪🇸 ES</div>
+          <div onclick="selectLang('TH')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D2B1A;font-weight:500;">🇹🇭 TH</div>
+          <div onclick="selectLang('ZH')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D2B1A;font-weight:500;">🇨🇳 ZH</div>
+        </div>
+      </div>
+      <button class="pro-badge" onclick="goTab('pro')">PRO ⭐</button>
+    </div>
+</div>
+
+<div class="nav">
+  <div class="nav-item on" onclick="goTab('scan',this)"><span class="ni">🔬</span><span id="nav0">Scan</span></div>
+  <div class="nav-item" onclick="goTab('disc',this)"><span class="ni">🌿</span><span id="nav1">Discover</span></div>
+  <div class="nav-item" onclick="goTab('pro',this)"><span class="ni">⭐</span><span id="nav2">Pro</span></div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="spin"></div>
+  <div class="ov-text" id="ovText">Analyzing image…</div>
+  <div class="ov-sub" id="ovSub">Gemini AI is examining your photo</div>
+</div>
+
+<!-- SCAN -->
+<div class="pg scan-pg on" id="pg-scan">
+  <div class="upload-zone" id="uz" onclick="document.getElementById('fi').click()">
+    <input type="file" id="fi" accept="image/*" onchange="onFile(event)" style="display:none">
+    <div class="uz-inner">
+      <div class="uz-ring">📷</div>
+      <div class="uz-title" id="uzTitle">Photograph a plant or fungus</div>
+      <div class="uz-sub" id="uzSub">Tap to take photo or choose from gallery</div>
+    </div>
+  </div>
+  <img class="preview" id="prev" alt="">
+  <div class="chips">
+    <div class="chip on" onclick="pickCat(this,'plant')"><span>🌿</span><span id="cl-plant">Plant</span></div>
+    <div class="chip" onclick="pickCat(this,'mushroom')"><span>🍄</span><span id="cl-mushroom">Mushroom</span></div>
+    <div class="chip" onclick="pickCat(this,'seaweed')"><span>🌊</span><span id="cl-seaweed">Seaweed</span></div>
+  </div>
+  <button class="scan-btn" id="scanBtn" onclick="doScan()" disabled>
+    🔬 <span id="scanBtnTxt">Identify Now</span>
+  </button>
+  <div class="result" id="res">
+    <div class="res-top">
+      <div class="res-icon" id="resIcon">🌿</div>
+      <div><div class="res-name" id="resName">—</div><div class="res-sci" id="resSci"></div></div>
+    </div>
+    <div class="safety-bar-wrap">
+      <div class="safety-label" id="safeLabel">—</div>
+      <div class="safety-track"><div class="safety-fill" id="safeFill"></div></div>
+    </div>
+    <div class="res-body">
+      <div class="season-row">
+        <div class="season-chip" id="spr">🌱 Spring</div>
+        <div class="season-chip" id="sum">☀️ Summer</div>
+        <div class="season-chip" id="aut">🍂 Autumn</div>
+        <div class="season-chip" id="win">❄️ Winter</div>
+      </div>
+      <div class="res-text" id="resTxt">—</div>
+      <div class="disclaimer" id="disclaim">⚠️ Educational only. Consult a local expert before consuming any wild plant.</div>
+      <div id="aiWarnBox" style="display:none;margin-top:10px;background:#FFF0F0;border-left:3px solid #C0392B;border-radius:0 10px 10px 0;padding:10px 13px;font-size:11.5px;color:#7B0000;line-height:1.55;">
+        🤖 AI results may be incorrect. Do not rely solely on AI for edibility decisions. Always verify with a local expert before consuming.
+      </div>
+    </div>
+  </div>
+  <div class="limit-banner" onclick="goTab('pro')">
+    <div class="lb-left">
+      <div class="lb-title" id="lbTitle">🔓 Unlock Unlimited Scans</div>
+      <div class="lb-sub" id="lbSub">Free: 3/day · Pro: 30/day + full features</div>
+    </div>
+    <button class="lb-btn" id="lbBtn">Go Pro</button>
+  </div>
+  <div class="safe-bottom"></div>
+</div>
+
+<!-- DISCOVER -->
+<div class="pg disc-pg" id="pg-disc">
+  <div class="disc-header">
+    <h2 id="discH">Field Guide</h2>
+    <p id="discSub">Common edible & toxic species by season.</p>
+  </div>
+  <div class="season-nav">
+    <div class="sn-item on" onclick="pickSeason(this,'spring')" id="sn-spring">🌱 Spring</div>
+    <div class="sn-item" onclick="pickSeason(this,'summer')" id="sn-summer">☀️ Summer</div>
+    <div class="sn-item" onclick="pickSeason(this,'autumn')" id="sn-autumn">🍂 Autumn</div>
+    <div class="sn-item" onclick="pickSeason(this,'winter')" id="sn-winter">❄️ Winter</div>
+  </div>
+  <div class="species-grid" id="spGrid"></div>
+  <div class="safety-guide">
+    <div class="sg-title">☠️ <span id="sgTitle">Safety Rules</span></div>
+    <div class="sg-row"><div class="sg-icon">🍄</div><div class="sg-text"><h4 id="sr1h">Mushrooms</h4><p id="sr1p">Never eat white-gilled wild mushrooms. Skirt + cup base = danger.</p></div></div>
+    <div class="sg-row"><div class="sg-icon">🌿</div><div class="sg-text"><h4 id="sr2h">Plants</h4><p id="sr2p">Milky sap, red/purple berries, fine hairs are red flags. Know your local lookalikes.</p></div></div>
+    <div class="sg-row"><div class="sg-icon">🌊</div><div class="sg-text"><h4 id="sr3h">Seaweed</h4><p id="sr3p">Clean water only. Blue-green algae is toxic — never harvest near algal blooms.</p></div></div>
+  </div>
+  <div class="safe-bottom"></div>
+</div>
+
+<!-- PRO -->
+<div class="pg pro-pg" id="pg-pro">
+  <div class="pro-hero">
+    <div class="ph-crown">👑</div>
+    <div class="ph-title">ForageID Pro</div>
+    <div class="ph-sub" id="proSub">30 AI scans/day, offline field guide, and expert-level species data.</div>
+    <div class="ph-price" id="priceDisplay">$3<span id="proMo"> / month</span></div>
+  </div>
+  <div class="feat-list">
+    <div class="feat"><div class="feat-ico">🔬</div><div class="feat-txt"><h4 id="f1">30 AI Scans/day</h4><p id="f1d">10x more than free tier</p></div><div class="feat-check">✓</div></div>
+    <div class="feat"><div class="feat-ico">📶</div><div class="feat-txt"><h4 id="f2">Offline Mode</h4><p id="f2d">Full database, no signal needed</p></div><div class="feat-check">✓</div></div>
+    <div class="feat"><div class="feat-ico">🗺️</div><div class="feat-txt"><h4 id="f3">5,000+ Species DB</h4><p id="f3d">Region-specific field data</p></div><div class="feat-check">✓</div></div>
+    <div class="feat"><div class="feat-ico">📅</div><div class="feat-txt"><h4 id="f4">Season Calendar</h4><p id="f4d">Best foraging times by species</p></div><div class="feat-check">✓</div></div>
+    <div class="feat"><div class="feat-ico">📓</div><div class="feat-txt"><h4 id="f5">Forage Journal</h4><p id="f5d">Save & revisit identifications</p></div><div class="feat-check">✓</div></div>
+  </div>
+  <div class="compare">
+    <div class="cmp-hdr"><div>Feature</div><div>Free</div><div>Pro ⭐</div></div>
+    <div class="cmp-row"><div id="c1">Daily Scans</div><div>3</div><div>30</div></div>
+    <div class="cmp-row"><div id="c2">Offline</div><div>❌</div><div>✅</div></div>
+    <div class="cmp-row"><div id="c3">Species DB</div><div>200</div><div>5,000+</div></div>
+    <div class="cmp-row"><div id="c4">Season Guide</div><div>❌</div><div>✅</div></div>
+    <div class="cmp-row"><div id="c5">Journal</div><div>❌</div><div>✅</div></div>
+  </div>
+  <!-- 월/연 탭 -->
+  <div style="display:flex;gap:8px;margin-top:4px;">
+    <button id="btnMonthly" onclick="setPlan('monthly')"
+      style="flex:1;padding:12px;border-radius:12px;border:2px solid var(--moss);background:var(--moss);color:white;font-family:'Outfit',sans-serif;font-weight:600;font-size:14px;cursor:pointer;">
+      Monthly $3
+    </button>
+    <button id="btnAnnual" onclick="setPlan('annual')"
+      style="flex:1;padding:12px;border-radius:12px;border:2px solid var(--mist);background:white;color:var(--moss);font-family:'Outfit',sans-serif;font-weight:600;font-size:14px;cursor:pointer;">
+      Annual $30 🏷️
+    </button>
+  </div>
+  <button class="sub-btn" id="subBtn" onclick="subscribe()" style="display:none">⭐ Subscribe — $3/month</button>
+  <button class="restore-btn" id="restBtn" onclick="restore()" style="display:none">Restore Purchase</button>
+  <div class="legal" id="legalTxt" style="display:none">Cancel anytime. Billed monthly via Google Play.</div>
+  <div style="background:#F0F4F0;border-radius:14px;padding:16px;text-align:center;margin-top:4px;">
+    <div style="font-size:22px;margin-bottom:8px;">🚧</div>
+    <div style="font-size:14px;font-weight:600;color:#1A4731;margin-bottom:4px;">Pro subscription coming soon</div>
+    <div style="font-size:12px;color:#6B8C7A;">Available in the next update via Google Play</div>
+  </div>
+  <div class="safe-bottom"></div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────
+// TABS
+// ─────────────────────────────────────────────────────────
+function goTab(id, el) {
+  document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('on'));
+  document.getElementById('pg-' + id).classList.add('on');
+  if (el) el.classList.add('on');
+  else document.querySelectorAll('.nav-item')[{scan:0,disc:1,pro:2}[id]].classList.add('on');
+}
+
+// ─────────────────────────────────────────────────────────
+// BACK BUTTON DEFENSE
+// ─────────────────────────────────────────────────────────
+function pushModal() { history.pushState({ modal: true }, ''); }
+window.addEventListener('popstate', function() {
+  const ov = document.getElementById('overlay');
+  if (ov.classList.contains('show')) {
+    // 로딩 중엔 무시
+    history.pushState({ modal: true }, '');
+    return;
+  }
+  const res = document.getElementById('res');
+  if (res.classList.contains('show')) {
+    res.classList.remove('show');
+    history.pushState({ modal: true }, '');
+  }
+});
+
+// ─────────────────────────────────────────────────────────
+// PLAN TOGGLE (월/연)
+// ─────────────────────────────────────────────────────────
+let currentPlan = 'monthly';
+function setPlan(plan) {
+  currentPlan = plan;
+  const l = T[CL];
+  const btnM = document.getElementById('btnMonthly');
+  const btnA = document.getElementById('btnAnnual');
+  if (plan === 'monthly') {
+    btnM.style.background = 'var(--moss)'; btnM.style.color = 'white'; btnM.style.borderColor = 'var(--moss)';
+    btnA.style.background = 'white'; btnA.style.color = 'var(--moss)'; btnA.style.borderColor = 'var(--mist)';
+    document.getElementById('subBtn').textContent = l.subBtnMonthly;
+    document.getElementById('priceDisplay').innerHTML = '$3<span id="proMo"> / month</span>';
+    document.getElementById('legalTxt').textContent = l.legalMonthly;
+  } else {
+    btnA.style.background = 'var(--moss)'; btnA.style.color = 'white'; btnA.style.borderColor = 'var(--moss)';
+    btnM.style.background = 'white'; btnM.style.color = 'var(--moss)'; btnM.style.borderColor = 'var(--mist)';
+    document.getElementById('subBtn').textContent = l.subBtnAnnual;
+    document.getElementById('priceDisplay').innerHTML = '$30<span id="proMo"> / year</span>';
+    document.getElementById('legalTxt').textContent = l.legalAnnual;
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// TRANSLATIONS
+// ─────────────────────────────────────────────────────────
+const LANGS = ['EN','KO','JA','ES','TH','ZH'];
+let li = 0, CL = 'EN';
+const T = {
+  EN:{
+    nav:['Scan','Discover','Pro'],
+    uzTitle:'Photograph a plant or fungus',uzSub:'Tap to take photo or choose from gallery',
+    cats:['Plant','Mushroom','Seaweed'],scanBtn:'Identify Now',
+    ovText:'Analyzing image…',ovSub:'Gemini AI is examining your photo',
+    lbTitle:'🔓 Unlock More Scans',lbSub:'Free: 3/day · Pro: 30/day + full features',lbBtn:'Go Pro',
+    discH:'Field Guide',discSub:'Common edible & toxic species by season.',
+    seasons:['🌱 Spring','☀️ Summer','🍂 Autumn','❄️ Winter'],
+    sgTitle:'Safety Rules',sr1h:'Mushrooms',sr1p:'Never eat white-gilled wild mushrooms. Skirt + cup base = danger.',
+    sr2h:'Plants',sr2p:'Milky sap, red/purple berries, fine hairs are red flags.',
+    sr3h:'Seaweed',sr3p:'Clean water only. Blue-green algae is toxic.',
+    proSub:'30 AI scans/day, offline field guide, and expert-level species data.',
+    f1:'30 AI Scans/day',f1d:'10x more than free',f2:'Offline Mode',f2d:'No signal needed',
+    f3:'5,000+ Species DB',f3d:'Region-specific data',f4:'Season Calendar',f4d:'Best foraging times',
+    f5:'Forage Journal',f5d:'Save identifications',
+    subBtnMonthly:'⭐ Subscribe — $3/month',subBtnAnnual:'⭐ Subscribe — $30/year',
+    legalMonthly:'Cancel anytime. Billed monthly via Google Play.',
+    legalAnnual:'Cancel anytime. Billed annually via Google Play.',
+    restBtn:'Restore Purchase',
+    c1:'Daily Scans',c2:'Offline',c3:'Species DB',c4:'Season Guide',c5:'Journal',
+    disclaim:'⚠️ Educational only. Consult a local expert before consuming any wild plant.',
+    spr:'🌱 Spring',sum:'☀️ Summer',aut:'🍂 Autumn',win:'❄️ Winter',
+    safe:'✅ EDIBLE',caution:'⚠️ USE CAUTION',danger:'☠️ TOXIC',unknown:'❓ UNIDENTIFIED'
+  },
+  KO:{
+    nav:['스캔','도감','프로'],
+    uzTitle:'식물이나 버섯을 촬영하세요',uzSub:'탭하여 촬영하거나 갤러리에서 선택',
+    cats:['식물','버섯','해조류'],scanBtn:'지금 판별하기',
+    ovText:'이미지 분석 중…',ovSub:'Gemini AI가 사진을 검사 중',
+    lbTitle:'🔓 더 많은 스캔 잠금 해제',lbSub:'무료: 3회/일 · 프로: 30회/일 + 전체 기능',lbBtn:'프로 가기',
+    discH:'필드 가이드',discSub:'계절별 식용·독성 종 안내.',
+    seasons:['🌱 봄','☀️ 여름','🍂 가을','❄️ 겨울'],
+    sgTitle:'안전 수칙',sr1h:'버섯',sr1p:'흰 주름 버섯 절대 금지. 치마+컵 밑동 주의.',
+    sr2h:'식물',sr2p:'유백색 수액, 빨간/보라 열매, 잔털은 위험 신호.',
+    sr3h:'해조류',sr3p:'깨끗한 물에서만 채취. 남조류는 독성.',
+    proSub:'하루 30회 AI 스캔, 오프라인 도감, 전문가 수준 종 데이터.',
+    f1:'하루 30회 AI 스캔',f1d:'무료의 10배',f2:'오프라인 모드',f2d:'인터넷 없이 사용',
+    f3:'5,000+ 종 DB',f3d:'지역별 데이터',f4:'계절 달력',f4d:'최적 채취 시기',
+    f5:'채집 일지',f5d:'판별 기록 저장',
+    subBtnMonthly:'⭐ 구독하기 — 월 $3',subBtnAnnual:'⭐ 구독하기 — 연 $30',
+    legalMonthly:'언제든 취소. 매월 청구. Google Play.',
+    legalAnnual:'언제든 취소. 매년 청구. Google Play.',
+    restBtn:'구매 복원',
+    c1:'일일 스캔',c2:'오프라인',c3:'종 DB',c4:'계절 가이드',c5:'일지',
+    disclaim:'⚠️ 교육 목적 전용. 야생 식물 섭취 전 전문가 확인 필수.',
+    spr:'🌱 봄',sum:'☀️ 여름',aut:'🍂 가을',win:'❄️ 겨울',
+    safe:'✅ 식용 가능',caution:'⚠️ 주의 필요',danger:'☠️ 독성',unknown:'❓ 판별 불가'
+  },
+  JA:{
+    nav:['スキャン','図鑑','プロ'],
+    uzTitle:'植物やキノコを撮影する',uzSub:'タップして撮影またはギャラリーから選択',
+    cats:['植物','キノコ','海藻'],scanBtn:'今すぐ判定',
+    ovText:'画像を解析中…',ovSub:'Gemini AIが写真を検査中',
+    lbTitle:'🔓 スキャン上限を解除',lbSub:'無料:3回/日 · プロ:30回/日+全機能',lbBtn:'プロへ',
+    discH:'フィールドガイド',discSub:'季節別の食用・毒性種。',
+    seasons:['🌱 春','☀️ 夏','🍂 秋','❄️ 冬'],
+    sgTitle:'安全ルール',sr1h:'キノコ',sr1p:'白いヒダのキノコは厳禁。スカート+カップ根元に注意。',
+    sr2h:'植物',sr2p:'乳白色の樹液、赤/紫の実、細毛は危険サイン。',
+    sr3h:'海藻',sr3p:'清潔な水域のみ。藍藻は有毒。',
+    proSub:'1日30回AIスキャン、オフライン図鑑、専門家レベルの種データ。',
+    f1:'1日30回AIスキャン',f1d:'無料の10倍',f2:'オフラインモード',f2d:'電波なしで使用可',
+    f3:'5,000+種DB',f3d:'地域別データ',f4:'季節カレンダー',f4d:'最適採取時期',
+    f5:'採取ジャーナル',f5d:'判定履歴を保存',
+    subBtnMonthly:'⭐ 登録する — $3/月',subBtnAnnual:'⭐ 登録する — $30/年',
+    legalMonthly:'いつでもキャンセル可。毎月請求。Google Play。',
+    legalAnnual:'いつでもキャンセル可。毎年請求。Google Play。',
+    restBtn:'購入を復元',
+    c1:'日次スキャン',c2:'オフライン',c3:'種DB',c4:'季節ガイド',c5:'ジャーナル',
+    disclaim:'⚠️ 教育目的のみ。野生植物を食べる前に専門家に相談。',
+    spr:'🌱 春',sum:'☀️ 夏',aut:'🍂 秋',win:'❄️ 冬',
+    safe:'✅ 食用可',caution:'⚠️ 注意',danger:'☠️ 有毒',unknown:'❓ 判定不能'
+  },
+  ES:{
+    nav:['Escanear','Descubrir','Pro'],
+    uzTitle:'Fotografía una planta u hongo',uzSub:'Toca para tomar foto o elegir de galería',
+    cats:['Planta','Hongo','Alga'],scanBtn:'Identificar ahora',
+    ovText:'Analizando imagen…',ovSub:'Gemini AI examina tu foto',
+    lbTitle:'🔓 Más escaneos disponibles',lbSub:'Gratis:3/día · Pro:30/día+todo incluido',lbBtn:'Ir a Pro',
+    discH:'Guía de campo',discSub:'Especies comestibles y tóxicas por temporada.',
+    seasons:['🌱 Primavera','☀️ Verano','🍂 Otoño','❄️ Invierno'],
+    sgTitle:'Reglas de seguridad',sr1h:'Hongos',sr1p:'Nunca comas hongos de láminas blancas. Anillo+copa = peligro.',
+    sr2h:'Plantas',sr2p:'Savia lechosa, bayas rojas/moradas y pelos son señales de alerta.',
+    sr3h:'Algas',sr3p:'Solo en aguas limpias. Algas verde-azules son tóxicas.',
+    proSub:'30 escaneos IA/día, guía offline y datos de especies a nivel experto.',
+    f1:'30 Escaneos IA/día',f1d:'10x más que gratis',f2:'Modo offline',f2d:'Sin internet',
+    f3:'Base 5,000+ especies',f3d:'Datos por región',f4:'Calendario estacional',f4d:'Mejor época',
+    f5:'Diario de foraging',f5d:'Guarda identificaciones',
+    subBtnMonthly:'⭐ Suscribirse — $3/mes',subBtnAnnual:'⭐ Suscribirse — $30/año',
+    legalMonthly:'Cancela cuando quieras. Mensual. Google Play.',
+    legalAnnual:'Cancela cuando quieras. Anual. Google Play.',
+    restBtn:'Restaurar compra',
+    c1:'Escaneos/día',c2:'Offline',c3:'Especies',c4:'Temporada',c5:'Diario',
+    disclaim:'⚠️ Solo educativo. Consulta un experto antes de consumir plantas silvestres.',
+    spr:'🌱 Prim.',sum:'☀️ Verano',aut:'🍂 Otoño',win:'❄️ Invierno',
+    safe:'✅ COMESTIBLE',caution:'⚠️ PRECAUCIÓN',danger:'☠️ TÓXICO',unknown:'❓ NO IDENTIFICADO'
+  },
+  TH:{
+    nav:['สแกน','คู่มือ','โปร'],
+    uzTitle:'ถ่ายภาพพืชหรือเห็ด',uzSub:'แตะเพื่อถ่ายภาพหรือเลือกจากแกลเลอรี',
+    cats:['พืช','เห็ด','สาหร่าย'],scanBtn:'ระบุทันที',
+    ovText:'กำลังวิเคราะห์ภาพ…',ovSub:'Gemini AI กำลังตรวจสอบภาพ',
+    lbTitle:'🔓 ปลดล็อกการสแกนเพิ่ม',lbSub:'ฟรี:3/วัน · โปร:30/วัน+ครบฟีเจอร์',lbBtn:'ไปโปร',
+    discH:'คู่มือภาคสนาม',discSub:'สายพันธุ์กินได้และมีพิษตามฤดูกาล',
+    seasons:['🌱 ฤดูใบไม้ผลิ','☀️ ฤดูร้อน','🍂 ฤดูใบไม้ร่วง','❄️ ฤดูหนาว'],
+    sgTitle:'กฎความปลอดภัย',sr1h:'เห็ด',sr1p:'อย่ากินเห็ดที่มีเหงือกสีขาว สายคาด+ฐานถ้วย = อันตราย',
+    sr2h:'พืช',sr2p:'น้ำยางสีขาว ผลเบอร์รี่แดง/ม่วง ขนละเอียด คือสัญญาณอันตราย',
+    sr3h:'สาหร่าย',sr3p:'เก็บจากน้ำสะอาดเท่านั้น สาหร่ายสีเขียว-น้ำเงินมีพิษ',
+    proSub:'สแกน AI 30 ครั้ง/วัน คู่มือออฟไลน์ และข้อมูลสายพันธุ์ระดับผู้เชี่ยวชาญ',
+    f1:'สแกน AI 30 ครั้ง/วัน',f1d:'มากกว่าฟรี 10 เท่า',f2:'โหมดออฟไลน์',f2d:'ไม่ต้องใช้อินเทอร์เน็ต',
+    f3:'ฐานข้อมูล 5,000+ สายพันธุ์',f3d:'ข้อมูลเฉพาะภูมิภาค',f4:'ปฏิทินฤดูกาล',f4d:'เวลาที่ดีที่สุดในการหาอาหาร',
+    f5:'บันทึกการหาอาหาร',f5d:'บันทึกการระบุชนิด',
+    subBtnMonthly:'⭐ สมัครสมาชิก — $3/เดือน',subBtnAnnual:'⭐ สมัครสมาชิก — $30/ปี',
+    legalMonthly:'ยกเลิกได้ทุกเมื่อ เรียกเก็บรายเดือน Google Play',
+    legalAnnual:'ยกเลิกได้ทุกเมื่อ เรียกเก็บรายปี Google Play',
+    restBtn:'กู้คืนการซื้อ',
+    c1:'สแกน/วัน',c2:'ออฟไลน์',c3:'ฐานข้อมูล',c4:'คู่มือฤดูกาล',c5:'บันทึก',
+    disclaim:'⚠️ เพื่อการศึกษาเท่านั้น ปรึกษาผู้เชี่ยวชาญก่อนรับประทานพืชป่า',
+    spr:'🌱 ใบไม้ผลิ',sum:'☀️ ร้อน',aut:'🍂 ใบไม้ร่วง',win:'❄️ หนาว',
+    safe:'✅ กินได้',caution:'⚠️ ระวัง',danger:'☠️ มีพิษ',unknown:'❓ ไม่ทราบชนิด'
+  },
+  ZH:{
+    nav:['扫描','图鉴','专业版'],
+    uzTitle:'拍摄植物或真菌',uzSub:'点击拍照或从相册选择',
+    cats:['植物','蘑菇','海藻'],scanBtn:'立即识别',
+    ovText:'正在分析图像…',ovSub:'Gemini AI 正在检查您的照片',
+    lbTitle:'🔓 解锁更多扫描次数',lbSub:'免费:3次/天 · 专业版:30次/天+全功能',lbBtn:'升级专业版',
+    discH:'野外指南',discSub:'按季节划分的常见食用和有毒物种',
+    seasons:['🌱 春季','☀️ 夏季','🍂 秋季','❄️ 冬季'],
+    sgTitle:'安全规则',sr1h:'蘑菇',sr1p:'切勿食用白色菌褶的野生蘑菇。有裙+杯状底部=危险。',
+    sr2h:'植物',sr2p:'乳白色汁液、红色/紫色浆果、细毛是危险信号。',
+    sr3h:'海藻',sr3p:'仅在干净水域采集。蓝绿藻有毒，切勿在藻华附近采集。',
+    proSub:'每日30次AI扫描、离线野外指南和专家级物种数据。',
+    f1:'每日30次AI扫描',f1d:'是免费版的10倍',f2:'离线模式',f2d:'无需信号',
+    f3:'5,000+物种数据库',f3d:'特定地区数据',f4:'季节日历',f4d:'最佳采集时间',
+    f5:'采集日志',f5d:'保存识别记录',
+    subBtnMonthly:'⭐ 订阅 — $3/月',subBtnAnnual:'⭐ 订阅 — $30/年',
+    legalMonthly:'随时取消。按月计费。Google Play。',
+    legalAnnual:'随时取消。按年计费。Google Play。',
+    restBtn:'恢复购买',
+    c1:'每日扫描',c2:'离线',c3:'物种库',c4:'季节指南',c5:'日志',
+    disclaim:'⚠️ 仅供教育参考。食用任何野生植物前请咨询当地专家。',
+    spr:'🌱 春',sum:'☀️ 夏',aut:'🍂 秋',win:'❄️ 冬',
+    safe:'✅ 可食用',caution:'⚠️ 请注意',danger:'☠️ 有毒',unknown:'❓ 未识别'
+  }
+};
+
+function st(id, v) { const e = document.getElementById(id); if (e && v !== undefined) e.textContent = v; }
+
+function applyLang(l) {
+  const t = T[l];
+  st('nav0',t.nav[0]); st('nav1',t.nav[1]); st('nav2',t.nav[2]);
+  st('uzTitle',t.uzTitle); st('uzSub',t.uzSub);
+  st('cl-plant',t.cats[0]); st('cl-mushroom',t.cats[1]); st('cl-seaweed',t.cats[2]);
+  st('scanBtnTxt',t.scanBtn); st('ovText',t.ovText); st('ovSub',t.ovSub);
+  st('lbTitle',t.lbTitle); st('lbSub',t.lbSub); st('lbBtn',t.lbBtn);
+  st('discH',t.discH); st('discSub',t.discSub);
+  st('sn-spring',t.seasons[0]); st('sn-summer',t.seasons[1]); st('sn-autumn',t.seasons[2]); st('sn-winter',t.seasons[3]);
+  st('sgTitle',t.sgTitle); st('sr1h',t.sr1h); st('sr1p',t.sr1p);
+  st('sr2h',t.sr2h); st('sr2p',t.sr2p); st('sr3h',t.sr3h); st('sr3p',t.sr3p);
+  st('proSub',t.proSub);
+  [1,2,3,4,5].forEach(i => { st('f'+i, t['f'+i]); st('f'+i+'d', t['f'+i+'d']); });
+  st('subBtn', currentPlan === 'monthly' ? t.subBtnMonthly : t.subBtnAnnual);
+  st('restBtn', t.restBtn);
+  st('legalTxt', currentPlan === 'monthly' ? t.legalMonthly : t.legalAnnual);
+  [1,2,3,4,5].forEach(i => st('c'+i, t['c'+i]));
+  st('disclaim', t.disclaim);
+  st('spr',t.spr); st('sum',t.sum); st('aut',t.aut); st('win',t.win);
+  document.getElementById('langBtn').textContent = '🌐 ' + l;
+  CL = l;
+  renderSpecies(curSeason);
+}
+
+function cycleLang() { li = (li + 1) % LANGS.length; applyLang(LANGS[li]); }
+function toggleLangMenu() {
+  const m = document.getElementById('langMenu');
+  m.style.display = m.style.display === 'none' ? 'block' : 'none';
+}
+function selectLang(l) {
+  li = LANGS.indexOf(l);
+  applyLang(l);
+  document.getElementById('langMenu').style.display = 'none';
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#langBtn') && !e.target.closest('#langMenu')) {
+    const m = document.getElementById('langMenu');
+    if (m) m.style.display = 'none';
+  }
+});
+
+// ─────────────────────────────────────────────────────────
+// CATEGORY
+// ─────────────────────────────────────────────────────────
+let cat = 'plant';
+function pickCat(el, c) {
+  document.querySelectorAll('.chip').forEach(b => b.classList.remove('on'));
+  el.classList.add('on'); cat = c;
+}
+
+// ─────────────────────────────────────────────────────────
+// FILE
+// ─────────────────────────────────────────────────────────
+let selFile = null;
+function onFile(e) {
+  const f = e.target.files[0]; if (!f) return; selFile = f;
+  const r = new FileReader();
+  r.onload = ev => {
+    const img = document.getElementById('prev');
+    img.src = ev.target.result; img.style.display = 'block';
+    document.getElementById('uz').style.display = 'none';
+    document.getElementById('scanBtn').disabled = false;
+    document.getElementById('res').classList.remove('show');
+  };
+  r.readAsDataURL(f);
+}
+
+// ─────────────────────────────────────────────────────────
+// SCAN — Gemini 2.0 Flash (Cloud Vision 완전 교체)
+// ─────────────────────────────────────────────────────────
+async function doScan() {
+  if (!selFile) return;
+  document.getElementById('overlay').classList.add('show');
+  pushModal();
+  try {
+    const b64 = await toB64(selFile);
+    const data = b64.split(',')[1];
+    const mime = selFile.type || 'image/jpeg';
+    const catMap = {
+      plant: 'wild plant, herb, or edible weed',
+      mushroom: 'mushroom or fungus',
+      seaweed: 'seaweed or sea vegetable'
+    };
+    const lMap = { EN:'English', KO:'Korean', JA:'Japanese', ES:'Spanish', TH:'Thai', ZH:'Chinese' };
+
+    const prompt = `You are a world-class foraging expert. Analyze this ${catMap[cat]} photo carefully.
+Respond ONLY in ${lMap[CL]}. Return ONLY valid JSON with no markdown, no code fences:
+{"name":"Common name","scientific":"Scientific name or empty string","safety":"SAFE or CAUTION or DANGER or UNKNOWN","seasons":["spring","summer","autumn","winter — include applicable ones"],"description":"2-3 sentences on identifying features, habitat, and edibility.","warning":"One specific warning or empty string if fully safe."}`;
+
+    // ★ Gemini 2.0 Flash API 호출 (Cloud Vision → Gemini 교체)
+    const GEMINI_KEY = 'AIzaSyD-REPLACE-WITH-YOUR-KEY'; // ← 실제 키로 교체
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${GEMINI_KEY}`;
+
+    const resp = await fetch(geminiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{
+          parts: [
+            { inline_data: { mime_type: mime, data: data } },
+            { text: prompt }
+          ]
+        }],
+        generationConfig: { temperature: 0.2, maxOutputTokens: 1000 }
+      })
+    });
+
+    const json = await resp.json();
+    // Gemini 응답 파싱 (null 체크 추가)
+    if (!json.candidates || !json.candidates[0] || !json.candidates[0].content) {
+      throw new Error('Empty response from AI');
+    }
+    const raw = json.candidates[0].content.parts[0].text
+      .replace(/```json|```/g, '').trim();
+    showResult(JSON.parse(raw));
+
+  } catch (err) {
+    showResult({
+      name: 'Error', scientific: '', safety: 'UNKNOWN', seasons: [],
+      description: 'Could not analyze. Please try a clearer photo.',
+      warning: ''
+    });
+  } finally {
+    document.getElementById('overlay').classList.remove('show');
+  }
+}
+
+function showResult(r) {
+  const t = T[CL], safety = r.safety || 'UNKNOWN';
+  const cfg = {
+    SAFE:    { icon:'✅', icls:'ri-safe',    lcls:'sl-safe',    fcls:'sf-safe',    label:t.safe    },
+    CAUTION: { icon:'⚠️', icls:'ri-caution', lcls:'sl-caution', fcls:'sf-caution', label:t.caution },
+    DANGER:  { icon:'☠️', icls:'ri-danger',  lcls:'sl-danger',  fcls:'sf-danger',  label:t.danger  },
+    UNKNOWN: { icon:'❓', icls:'ri-unknown', lcls:'sl-unknown', fcls:'sf-unknown', label:t.unknown }
+  };
+  const c = cfg[safety] || cfg.UNKNOWN;
+  const icon = document.getElementById('resIcon');
+  icon.textContent = c.icon; icon.className = 'res-icon ' + c.icls;
+  st('resName', r.name || '—'); st('resSci', r.scientific || '');
+  const lbl = document.getElementById('safeLabel');
+  lbl.textContent = c.label; lbl.className = 'safety-label ' + c.lcls;
+  document.getElementById('safeFill').className = 'safety-fill ' + c.fcls;
+  ['spring','summer','autumn','winter'].forEach((s, i) => {
+    document.getElementById(['spr','sum','aut','win'][i])
+      .classList.toggle('active', (r.seasons || []).some(x => x.toLowerCase().includes(s)));
+  });
+  st('resTxt', (r.description || '') + (r.warning ? ' ⚠️ ' + r.warning : ''));
+  // AI 오인식 경고 추가
+  const aiWarn = document.getElementById('aiWarnBox');
+  if (aiWarn) aiWarn.style.display = 'block';
+  document.getElementById('res').classList.add('show');
+  document.getElementById('res').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function toB64(f) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(f);
+  });
+}
+
+// ─────────────────────────────────────────────────────────
+// DISCOVER
+// ─────────────────────────────────────────────────────────
+const SPECIES = {
+  spring: [{e:'🌿',n:'Ramps',s:'Allium tricoccum',safety:'safe'},{e:'🌱',n:'Dandelion',s:'Taraxacum officinale',safety:'safe'},{e:'🍄',n:'Morel Mushroom',s:'Morchella esculenta',safety:'safe'},{e:'☠️',n:'False Morel',s:'Gyromitra esculenta',safety:'danger'}],
+  summer: [{e:'🍓',n:'Wild Strawberry',s:'Fragaria vesca',safety:'safe'},{e:'🫐',n:'Bilberry',s:'Vaccinium myrtillus',safety:'safe'},{e:'🌿',n:'Purslane',s:'Portulaca oleracea',safety:'safe'},{e:'☠️',n:'Deadly Nightshade',s:'Atropa belladonna',safety:'danger'}],
+  autumn: [{e:'🍄',n:'Chanterelle',s:'Cantharellus cibarius',safety:'safe'},{e:'🌰',n:'Sweet Chestnut',s:'Castanea sativa',safety:'safe'},{e:'☠️',n:'Death Cap',s:'Amanita phalloides',safety:'danger'},{e:'🍄',n:'Chicken of Woods',s:'Laetiporus sulphureus',safety:'caution'}],
+  winter: [{e:'🌊',n:'Sea Lettuce',s:'Ulva lactuca',safety:'safe'},{e:'🌿',n:'Wood Sorrel',s:'Oxalis acetosella',safety:'safe'},{e:'🌊',n:'Dulse',s:'Palmaria palmata',safety:'safe'},{e:'☠️',n:'Holly Berry',s:'Ilex aquifolium',safety:'danger'}]
+};
+let curSeason = 'spring';
+
+function pickSeason(el, s) {
+  document.querySelectorAll('.sn-item').forEach(x => x.classList.remove('on'));
+  el.classList.add('on'); curSeason = s; renderSpecies(s);
+}
+
+function renderSpecies(s) {
+  const t = T[CL];
+  const sm = { safe:'ss-safe', caution:'ss-caution', danger:'ss-danger' };
+  const sl = { safe:t.safe, caution:t.caution, danger:t.danger };
+  document.getElementById('spGrid').innerHTML = SPECIES[s].map(sp => `
+    <div class="sp-card">
+      <div class="sp-emoji">${sp.e}</div>
+      <div class="sp-name">${sp.n}</div>
+      <div class="sp-sci">${sp.s}</div>
+      <span class="sp-safety ${sm[sp.safety]}">${sl[sp.safety] || sp.safety}</span>
+    </div>`).join('');
+}
+renderSpecies('spring');
+
+// ─────────────────────────────────────────────────────────
+// PRO
+// ─────────────────────────────────────────────────────────
+// v6: 구독/복원 버튼 숨김 (Google Play Billing 연결 전)
+function subscribe() { /* Coming soon */ }
+function restore()   { /* Coming soon */ }
+</script>
+</body>
+</html>
