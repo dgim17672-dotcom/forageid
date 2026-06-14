@@ -22,7 +22,7 @@
 html,body{height:100%}
 body{
   font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);
-  display:flex;flex-direction:column;max-width:430px;margin:0 auto;overflow:hidden;
+  display:flex;flex-direction:column;max-width:430px;margin:0 auto;overflow-y:auto;
 }
 body::before{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
@@ -74,7 +74,7 @@ body::before{
   font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;color:#4A7060;
   cursor:pointer;transition:all .2s;white-space:nowrap}
 .chip.on{background:var(--moss);border-color:var(--moss);color:white}
-.scan-btn{position:relative;overflow:hidden;
+.scan-btn{position:relative;overflow-y:auto;
   background:linear-gradient(135deg,var(--moss),var(--fern));
   color:white;border:none;border-radius:16px;padding:15px;
   font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;
@@ -82,7 +82,7 @@ body::before{
   box-shadow:0 4px 16px rgba(45,106,79,.4);letter-spacing:.3px;transition:all .2s}
 .scan-btn:active{transform:scale(.98)}
 .scan-btn:disabled{background:#ccc;box-shadow:none;cursor:not-allowed}
-.result{background:white;border-radius:20px;overflow:hidden;
+.result{background:white;border-radius:20px;overflow-y:auto;
   box-shadow:0 4px 24px rgba(13,43,26,.1);display:none}
 .result.show{display:block;animation:rise .4s cubic-bezier(.34,1.56,.64,1)}
 @keyframes rise{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
@@ -164,7 +164,7 @@ body::before{
   border:1px solid rgba(255,255,255,.2);border-radius:50px;padding:8px 24px;
   font-size:20px;font-weight:600}
 .ph-price span{font-size:13px;opacity:.7;font-weight:400}
-.feat-list{background:white;border-radius:18px;overflow:hidden;
+.feat-list{background:white;border-radius:18px;overflow-y:auto;
   box-shadow:0 2px 12px rgba(13,43,26,.07)}
 .feat{display:flex;align-items:center;gap:14px;padding:15px 16px;
   border-bottom:1px solid var(--mist)}
@@ -174,7 +174,7 @@ body::before{
 .feat-txt h4{font-size:13.5px;font-weight:600;color:var(--ink)}
 .feat-txt p{font-size:11.5px;color:#6B8C7A;margin-top:2px}
 .feat-check{margin-left:auto;color:var(--fern);font-size:18px;flex-shrink:0}
-.compare{background:white;border-radius:18px;overflow:hidden;
+.compare{background:white;border-radius:18px;overflow-y:auto;
   box-shadow:0 2px 12px rgba(13,43,26,.07)}
 .cmp-hdr{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--mist);padding:10px 16px}
 .cmp-hdr div{font-size:11px;font-weight:700;color:var(--moss);text-align:center}
