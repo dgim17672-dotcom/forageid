@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>ForageID – AI Foraging Guide v6</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0D2B1A">
+<meta name="theme-color" content="#0D1B3E">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="ForageID">
@@ -15,7 +15,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --ink:#0D2B1A;--forest:#1A4731;--moss:#2D6A4F;--fern:#52B788;
+  --ink:#0D1B3E;--forest:#0D1B3E;--moss:#1976D2;--fern:#1565C0;
   --dew:#95D5B2;--mist:#D8F3DC;--paper:#F7FBF8;--cream:#FEFCF8;
   --safe:#2D9B5A;--caution:#D4840A;--danger:#C0392B;--unknown:#6B7280;
 }
@@ -111,7 +111,7 @@ body::before{
 .res-text{font-size:13.5px;color:#3D5C4A;line-height:1.65;margin-bottom:14px}
 .disclaimer{background:#FFFBF0;border-left:3px solid var(--caution);
   border-radius:0 10px 10px 0;padding:10px 13px;font-size:11.5px;color:#7B5A00;line-height:1.55}
-.limit-banner{background:linear-gradient(135deg,#0D2B1A,#1A4731);border-radius:16px;
+.limit-banner{background:linear-gradient(135deg,#0D1B3E,#1a237e);border-radius:16px;
   padding:15px 18px;display:flex;align-items:center;gap:14px;cursor:pointer}
 .lb-left{flex:1}
 .lb-title{font-size:14px;font-weight:600;color:white;margin-bottom:3px}
@@ -215,12 +215,12 @@ body::before{
       <div style="position:relative;">
         <button class="lang-pill" onclick="toggleLangMenu()" id="langBtn">🌐 EN</button>
         <div id="langMenu" style="display:none;position:absolute;right:0;top:36px;background:white;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;overflow:hidden;min-width:100px;">
-          <div onclick="selectLang('EN')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D2B1A;font-weight:500;">🇺🇸 EN</div>
-          <div onclick="selectLang('KO')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D2B1A;font-weight:500;">🇰🇷 KO</div>
-          <div onclick="selectLang('JA')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D2B1A;font-weight:500;">🇯🇵 JA</div>
-          <div onclick="selectLang('ES')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D2B1A;font-weight:500;">🇪🇸 ES</div>
-          <div onclick="selectLang('TH')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D2B1A;font-weight:500;">🇹🇭 TH</div>
-          <div onclick="selectLang('ZH')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D2B1A;font-weight:500;">🇨🇳 ZH</div>
+          <div onclick="selectLang('EN')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D1B3E;font-weight:500;">🇺🇸 EN</div>
+          <div onclick="selectLang('KO')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D1B3E;font-weight:500;">🇰🇷 KO</div>
+          <div onclick="selectLang('JA')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D1B3E;font-weight:500;">🇯🇵 JA</div>
+          <div onclick="selectLang('ES')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D1B3E;font-weight:500;">🇪🇸 ES</div>
+          <div onclick="selectLang('TH')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D1B3E;font-weight:500;">🇹🇭 TH</div>
+          <div onclick="selectLang('ZH')" style="padding:10px 16px;font-size:13px;cursor:pointer;color:#0D1B3E;font-weight:500;">🇨🇳 ZH</div>
         </div>
       </div>
       <button class="pro-badge" onclick="goTab('pro')">PRO ⭐</button>
@@ -352,7 +352,7 @@ body::before{
   <div class="legal" id="legalTxt" style="display:none">Cancel anytime. Billed monthly via Google Play.</div>
   <div style="background:#F0F4F0;border-radius:14px;padding:16px;text-align:center;margin-top:4px;">
     <div style="font-size:22px;margin-bottom:8px;">🚧</div>
-    <div style="font-size:14px;font-weight:600;color:#1A4731;margin-bottom:4px;">Pro subscription coming soon</div>
+    <div style="font-size:14px;font-weight:600;color:#1a237e;margin-bottom:4px;">Pro subscription coming soon</div>
     <div style="font-size:12px;color:#6B8C7A;">Available in the next update via Google Play</div>
   </div>
   <div class="safe-bottom"></div>
@@ -656,7 +656,7 @@ Respond ONLY in ${lMap[CL]}. Return ONLY valid JSON with no markdown, no code fe
 {"name":"Common name","scientific":"Scientific name or empty string","safety":"SAFE or CAUTION or DANGER or UNKNOWN","seasons":["spring","summer","autumn","winter — include applicable ones"],"description":"2-3 sentences on identifying features, habitat, and edibility.","warning":"One specific warning or empty string if fully safe."}`;
 
     // ★ Gemini 2.0 Flash API 호출 (Cloud Vision → Gemini 교체)
-    const GEMINI_KEY = 'AIzaSyB18dSE-qrdMNK-xqRiTZLXwXkW813WeKE'; // ← 실제 키로 교체
+    const GEMINI_KEY = 'AIzaSyBIekZsUh_A6fd2_BN_buUCNwDdKuivAig'; // ← 실제 키로 교체
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${GEMINI_KEY}`;
 
     const resp = await fetch(geminiUrl, {
