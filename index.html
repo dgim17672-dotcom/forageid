@@ -656,7 +656,7 @@ Respond ONLY in ${lMap[CL]}. Return ONLY valid JSON with no markdown, no code fe
 {"name":"Common name","scientific":"Scientific name or empty string","safety":"SAFE or CAUTION or DANGER or UNKNOWN","seasons":["spring","summer","autumn","winter — include applicable ones"],"description":"2-3 sentences on identifying features, habitat, and edibility.","warning":"One specific warning or empty string if fully safe."}`;
 
     // ★ Gemini 2.0 Flash API 호출 (Cloud Vision → Gemini 교체)
-    const GEMINI_KEY = 'AIzaSyBIekZsUh_A6fd2_BN_buUCNwDdKuivAig'; // ← 실제 키로 교체
+    const GEMINI_KEY = 'AIzaSyDZgnJU8TCSs-vB-hsnU1cOn2o7xJpY-T4'; // ← 실제 키로 교체
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${GEMINI_KEY}`;
 
     const resp = await fetch(geminiUrl, {
