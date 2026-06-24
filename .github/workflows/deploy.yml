@@ -2,15 +2,17 @@ name: Deploy with API Key
 on:
   push:
     branches: [main]
+permissions:
+  contents: write
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Inject API Key
-        run: sed -i "s/AIzaSyDZgnJU8TCSs-vB-hsnU1cOn2o7xJpY-T4/${{ secrets.GEMINI_API_KEY }}/g" index.html
+        run: sed -i "s/GEMINI_KEY_PLACEHOLDER/${{ secrets.GEMINI_API_KEY }}/g" index.html
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./
