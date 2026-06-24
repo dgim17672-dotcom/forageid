@@ -1,0 +1,4 @@
+#Tue Jun 23 07:25:03 KST 2026
+base.0=C\:\\Users\\user\\forageid\\app\\build\\intermediates\\dex\\release\\minifyReleaseWithR8\\classes.dex
+renamed.0=classes.dex
+path.0=classes.dex
