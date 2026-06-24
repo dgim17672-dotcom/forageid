@@ -1,0 +1,51 @@
+{
+  "packageId": "io.github.dgim17672_dotcom.forageid",
+  "host": "dgim17672-dotcom.github.io",
+  "name": "ForageID",
+  "launcherName": "ForageID",
+  "display": "standalone",
+  "themeColor": "#2D6A4F",
+  "themeColorDark": "#000000",
+  "navigationColor": "#000000",
+  "navigationColorDark": "#000000",
+  "navigationDividerColor": "#000000",
+  "navigationDividerColorDark": "#000000",
+  "backgroundColor": "#F0FAF2",
+  "enableNotifications": true,
+  "startUrl": "/forageid/",
+  "iconUrl": "https://dgim17672-dotcom.github.io/forageid/icon-512.png",
+  "maskableIconUrl": "https://dgim17672-dotcom.github.io/forageid/icon-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "C:\\Users\\user\\forageid\\android.keystore",
+    "alias": "android"
+  },
+  "appVersionName": "13",
+  "appVersionCode": 13,
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://dgim17672-dotcom.github.io/forageid/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {
+    "playBilling": {
+      "enabled": true
+    }
+  },
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://dgim17672-dotcom.github.io/forageid/",
+  "minSdkVersion": 21,
+  "orientation": "portrait",
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "protocolHandlers": [],
+  "fileHandlers": [],
+  "launchHandlerClientMode": "",
+  "displayOverride": [],
+  "appVersion": "13"
+}
