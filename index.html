@@ -19,8 +19,8 @@
   --dew:#95D5B2;--mist:#D8F3DC;--paper:#F7FBF8;--cream:#FEFCF8;
   --safe:#2D9B5A;--caution:#D4840A;--danger:#C0392B;--unknown:#6B7280;
 }
-html,body{height:100%}
-body{
+html,body{background:#0D1F3C;height:100%}
+body{background:#0D1F3C;
   font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);
   display:flex;flex-direction:column;max-width:430px;margin:0 auto;overflow-y:auto;
 }
@@ -52,7 +52,7 @@ body::before{
 .pg.on{display:flex;flex-direction:column}
 .pg::-webkit-scrollbar{width:0}
 .scan-pg{padding:16px;gap:12px}
-.upload-zone{position:relative;background:#1a2f4a;border:2px dashed #4A90D9;
+.upload-zone{position:relative;background:var(--cream);border:2px dashed #4A90D9;
   border-radius:22px;overflow:hidden;cursor:pointer;transition:all .25s;
   min-height:190px;display:flex;align-items:center;justify-content:center}
 .upload-zone:active{transform:scale(.98)}
@@ -103,7 +103,7 @@ body::before{
 .sf-caution{background:linear-gradient(90deg,#D4840A,#F4A261);width:55%}
 .sf-danger{background:linear-gradient(90deg,#C0392B,#E74C3C);width:20%}
 .sf-unknown{background:#D1D5DB;width:40%}
-.res-body{padding:0 18px 18px}
+.res-body{background:#0D1F3C;padding:0 18px 18px}
 .season-row{display:flex;gap:6px;margin-bottom:14px}
 .season-chip{flex:1;text-align:center;padding:7px 4px;border-radius:10px;
   font-size:10px;font-weight:600;letter-spacing:.4px;background:#F5F5F5;color:#999}
