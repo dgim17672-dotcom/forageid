@@ -717,7 +717,7 @@ function showResult(r) {
   const aiWarn = document.getElementById('aiWarnBox');
   if (aiWarn) aiWarn.style.display = 'block';
   document.getElementById('res').classList.add('show');
-  document.getElementById('res').scrollIntoView({ behavior:'smooth', block:'nearest' });
+  document.getElementById('res').scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
 function toB64(f) {
