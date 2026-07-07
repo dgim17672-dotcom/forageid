@@ -701,35 +701,47 @@ async function doScan() {
     const lMap = { EN:'English', KO:'Korean', JA:'Japanese', ES:'Spanish', TH:'Thai', ZH:'Chinese' };
 
     const prompt = `You are a world-class foraging expert. Analyze this ${catMap[cat]} photo carefully.
-Respond ONLY in ${lMap[CL]}. Return ONLY valid JSON with no markdown, no code fences:
+Respond ONLY in ${lMap[CL]}. Every single word in your JSON values (name, description, warning) MUST be written entirely in ${lMap[CL]} using its native script only. Do NOT mix in Korean, English, or any other language or script under any circumstance, even for the common name — translate it fully into ${lMap[CL]}. Return ONLY valid JSON with no markdown, no code fences:
 {"name":"Common name","scientific":"Scientific name or empty string","safety":"SAFE or CAUTION or DANGER or UNKNOWN","seasons":["spring","summer","autumn","winter — include applicable ones"],"description":"2-3 sentences on identifying features, habitat, and edibility.","warning":"One specific warning or empty string if fully safe."}`;
 
     // ★ Gemini 2.0 Flash API 호출 (Cloud Vision → Gemini 교체)
         const GEMINI_KEY = "unused";
         const geminiUrl = "https://forageid-proxy.dgim17672.workers.dev";
 
-    const resp = await fetch(geminiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{
-          parts: [
-            { inline_data: { mime_type: mime, data: data } },
-            { text: prompt }
-          ]
-        }],
-        generationConfig: { temperature: 0.2, maxOutputTokens: 1000 }
-      })
-    });
-
-    const json = await resp.json();
-    // Gemini 응답 파싱 (null 체크 추가)
-    if (!json.candidates || !json.candidates[0] || !json.candidates[0].content) {
-      throw new Error('Empty response from AI');
+    async function callGemini() {
+      const resp = await fetch(geminiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              { inline_data: { mime_type: mime, data: data } },
+              { text: prompt }
+            ]
+          }],
+          generationConfig: { temperature: 0.2, maxOutputTokens: 1000 }
+        })
+      });
+      const json = await resp.json();
+      if (!json.candidates || !json.candidates[0] || !json.candidates[0].content) {
+        throw new Error('Empty response from AI');
+      }
+      const raw = json.candidates[0].content.parts[0].text
+        .replace(/```json|```/g, '').trim();
+      return JSON.parse(raw);
     }
-    const raw = json.candidates[0].content.parts[0].text
-      .replace(/```json|```/g, '').trim();
-    showResult(JSON.parse(raw));
+
+    // 언어 순도 체크: 목표 언어가 한국어가 아닌데 한글이 섞여 나오면 1회 재시도
+    function hasStrayHangul(obj) {
+      const text = (obj.name || '') + (obj.description || '') + (obj.warning || '');
+      return /[\uAC00-\uD7A3]/.test(text);
+    }
+
+    let result = await callGemini();
+    if (CL !== 'KO' && hasStrayHangul(result)) {
+      result = await callGemini();
+    }
+    showResult(result);
 
   } catch (err) {
     showResult({
