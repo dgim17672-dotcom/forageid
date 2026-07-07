@@ -82,6 +82,16 @@ body::before{
   box-shadow:0 4px 16px rgba(45,106,79,.4);letter-spacing:.3px;transition:all .2s}
 .scan-btn:active{transform:scale(.98)}
 .scan-btn:disabled{background:#ccc;box-shadow:none;cursor:not-allowed}
+.reselect-btn{width:100%;background:#EAF2FF;color:#1a3a6e;border:2px solid #4A90D9;
+  border-radius:14px;padding:12px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;
+  margin-top:8px;cursor:pointer;display:none;align-items:center;justify-content:center;gap:8px}
+.reselect-btn:active{transform:scale(.98)}
+.scan-count{display:flex;align-items:center;justify-content:center;gap:8px;margin:4px 0 2px}
+.scan-count .sc-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:12px;font-weight:700;background:#e8edf5;color:#8a94a8;
+  font-family:'Outfit',sans-serif;transition:all .2s}
+.scan-count .sc-dot.used{background:#0D1B3E;color:#fff}
+.scan-count .sc-txt{font-size:12px;color:#6B8C7A;font-family:'Outfit',sans-serif}
 .result{background:white;border-radius:20px;overflow-y:visible;flex-shrink:0;
   box-shadow:0 4px 24px rgba(13,43,26,.1);display:none}
 .result.show{display:block;animation:rise .4s cubic-bezier(.34,1.56,.64,1)}
@@ -250,10 +260,17 @@ body::before{
     </div>
   </div>
   <img class="preview" id="prev" alt="" onclick="document.getElementById('fi').click()" style="cursor:pointer">
+  <button class="reselect-btn" id="reselectBtn" onclick="document.getElementById('fi').click()">
+    🔄 <span id="reselectTxt">Choose Different Photo</span>
+  </button>
   <div class="chips">
     <div class="chip on" onclick="pickCat(this,'plant')"><span>🌿</span><span id="cl-plant">Plant</span></div>
     <div class="chip" onclick="pickCat(this,'mushroom')"><span>🍄</span><span id="cl-mushroom">Mushroom</span></div>
     <div class="chip" onclick="pickCat(this,'seaweed')"><span>🌊</span><span id="cl-seaweed">Seaweed</span></div>
+  </div>
+  <div class="scan-count" id="scanCount">
+    <span class="sc-dot" id="sc1">1</span><span class="sc-dot" id="sc2">2</span><span class="sc-dot" id="sc3">3</span>
+    <span class="sc-txt" id="scanCountTxt">Today's free scans</span>
   </div>
   <button class="scan-btn" id="scanBtn" onclick="doScan()" disabled>
     🔬 <span id="scanBtnTxt">Identify Now</span>
@@ -421,6 +438,7 @@ const T = {
   EN:{
     nav:['Scan','Discover','Pro'],
     uzTitle:'Photograph a plant or fungus',uzSub:'Tap to take photo or choose from gallery',
+    reselect:'Choose Different Photo',scText:"Today's free scans",
     cats:['Plant','Mushroom','Seaweed'],scanBtn:'Identify Now',
     ovText:'Analyzing image…',ovSub:'Gemini AI is examining your photo',
     lbTitle:'🔓 Unlock More Scans',lbSub:'Free: 3/day · Pro: 30/day + full features',lbBtn:'Go Pro',
@@ -445,6 +463,7 @@ const T = {
   KO:{
     nav:['스캔','도감','프로'],
     uzTitle:'식물이나 버섯을 촬영하세요',uzSub:'탭하여 촬영하거나 갤러리에서 선택',
+    reselect:'다른 사진 선택',scText:'오늘의 무료 스캔',
     cats:['식물','버섯','해조류'],scanBtn:'지금 판별하기',
     ovText:'이미지 분석 중…',ovSub:'Gemini AI가 사진을 검사 중',
     lbTitle:'🔓 더 많은 스캔 잠금 해제',lbSub:'무료: 3회/일 · 프로: 30회/일 + 전체 기능',lbBtn:'프로 가기',
@@ -469,6 +488,7 @@ const T = {
   JA:{
     nav:['スキャン','図鑑','プロ'],
     uzTitle:'植物やキノコを撮影する',uzSub:'タップして撮影またはギャラリーから選択',
+    reselect:'別の写真を選択',scText:'本日の無料スキャン',
     cats:['植物','キノコ','海藻'],scanBtn:'今すぐ判定',
     ovText:'画像を解析中…',ovSub:'Gemini AIが写真を検査中',
     lbTitle:'🔓 スキャン上限を解除',lbSub:'無料:3回/日 · プロ:30回/日+全機能',lbBtn:'プロへ',
@@ -493,6 +513,7 @@ const T = {
   ES:{
     nav:['Escanear','Descubrir','Pro'],
     uzTitle:'Fotografía una planta u hongo',uzSub:'Toca para tomar foto o elegir de galería',
+    reselect:'Elegir otra foto',scText:'Escaneos gratis de hoy',
     cats:['Planta','Hongo','Alga'],scanBtn:'Identificar ahora',
     ovText:'Analizando imagen…',ovSub:'Gemini AI examina tu foto',
     lbTitle:'🔓 Más escaneos disponibles',lbSub:'Gratis:3/día · Pro:30/día+todo incluido',lbBtn:'Ir a Pro',
@@ -517,6 +538,7 @@ const T = {
   TH:{
     nav:['สแกน','คู่มือ','โปร'],
     uzTitle:'ถ่ายภาพพืชหรือเห็ด',uzSub:'แตะเพื่อถ่ายภาพหรือเลือกจากแกลเลอรี',
+    reselect:'เลือกภาพอื่น',scText:'สแกนฟรีวันนี้',
     cats:['พืช','เห็ด','สาหร่าย'],scanBtn:'ระบุทันที',
     ovText:'กำลังวิเคราะห์ภาพ…',ovSub:'Gemini AI กำลังตรวจสอบภาพ',
     lbTitle:'🔓 ปลดล็อกการสแกนเพิ่ม',lbSub:'ฟรี:3/วัน · โปร:30/วัน+ครบฟีเจอร์',lbBtn:'ไปโปร',
@@ -541,6 +563,7 @@ const T = {
   ZH:{
     nav:['扫描','图鉴','专业版'],
     uzTitle:'拍摄植物或真菌',uzSub:'点击拍照或从相册选择',
+    reselect:'选择其他照片',scText:'今日免费扫描',
     cats:['植物','蘑菇','海藻'],scanBtn:'立即识别',
     ovText:'正在分析图像…',ovSub:'Gemini AI 正在检查您的照片',
     lbTitle:'🔓 解锁更多扫描次数',lbSub:'免费:3次/天 · 专业版:30次/天+全功能',lbBtn:'升级专业版',
@@ -570,6 +593,7 @@ function applyLang(l) {
   const t = T[l];
   st('nav0',t.nav[0]); st('nav1',t.nav[1]); st('nav2',t.nav[2]);
   st('uzTitle',t.uzTitle); st('uzSub',t.uzSub);
+  st('reselectTxt',t.reselect); st('scanCountTxt',t.scText);
   st('cl-plant',t.cats[0]); st('cl-mushroom',t.cats[1]); st('cl-seaweed',t.cats[2]);
   st('scanBtnTxt',t.scanBtn); st('ovText',t.ovText); st('ovSub',t.ovSub);
   st('lbTitle',t.lbTitle); st('lbSub',t.lbSub); st('lbBtn',t.lbBtn);
@@ -627,6 +651,7 @@ function onFile(e) {
     const img = document.getElementById('prev');
     img.src = ev.target.result; img.style.display = 'block';
     document.getElementById('uz').style.display = 'none';
+    document.getElementById('reselectBtn').style.display = 'flex';
     document.getElementById('scanBtn').disabled = false;
     document.getElementById('res').classList.remove('show');
   };
@@ -636,8 +661,32 @@ function onFile(e) {
 // ─────────────────────────────────────────────────────────
 // SCAN — Gemini 2.0 Flash (Cloud Vision 완전 교체)
 // ─────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────
+// DAILY SCAN COUNT (Free: 3/day)
+// ─────────────────────────────────────────────────────────
+function todayKey() {
+  const d = new Date();
+  return 'fid_scans_' + d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+}
+function getScanCount() { return parseInt(localStorage.getItem(todayKey()) || '0', 10); }
+function incScanCount() {
+  const c = getScanCount() + 1;
+  localStorage.setItem(todayKey(), c);
+  renderScanDots();
+  return c;
+}
+function renderScanDots() {
+  const c = getScanCount();
+  [1, 2, 3].forEach(n => {
+    const el = document.getElementById('sc' + n);
+    if (el) el.classList.toggle('used', n <= c);
+  });
+}
+
 async function doScan() {
   if (!selFile) return;
+  if (getScanCount() >= 3) { goTab('pro'); return; }
+  incScanCount();
   document.getElementById('overlay').classList.add('show');
   pushModal();
   try {
@@ -758,6 +807,7 @@ function renderSpecies(s) {
     </div>`).join('');
 }
 renderSpecies('spring');
+renderScanDots();
 
 // ─────────────────────────────────────────────────────────
 // PRO
